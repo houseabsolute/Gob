@@ -1,0 +1,5 @@
+%syntax-version=1.0.0
+%project=Gob
+%uri=git@github.com:houseabsolute/Gob.git
+
+base-schema 2016-08-28T16:18:50Z Dave Rolsky <autarch@urth.org> # Create schema
