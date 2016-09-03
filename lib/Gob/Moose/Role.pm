@@ -1,6 +1,6 @@
 ## no critic (Moose::RequireMakeImmutable)
 
-package Gob::Moose;
+package Gob::Moose::Role;
 
 use Import::Into;
 use Moose ();
@@ -13,7 +13,7 @@ use g;
 
 my ($import) = Moose::Exporter->setup_import_methods(
     install => [ 'unimport', 'init_meta' ],
-    also    => ['Moose'],
+    also    => ['Moose::Role'],
 );
 
 sub import ( $class, @ ) {
@@ -22,7 +22,6 @@ sub import ( $class, @ ) {
     $import->( undef, { into => $for_class } );
 
     MooseX::SemiAffordanceAccessor->import( { into => $for_class } );
-    MooseX::StrictConstructor->import( { into => $for_class } );
 
     # Note that we need to use a level here rather than a classname so that
     # importing autodie works.
