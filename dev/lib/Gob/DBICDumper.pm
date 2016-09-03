@@ -27,7 +27,7 @@ has debug => (
 
 sub run ($self) {
     $self->_dump_database;
-    system('tidyall -r lib/Gob/Schema');
+    system(qw( tidyall -r lib/Gob/Schema ));
     return 0;
 }
 
