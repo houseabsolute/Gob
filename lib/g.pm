@@ -114,11 +114,12 @@ sub import {
     strict->import;
     warnings->import( FATAL    => @WARNING_CATEGORIES );
     warnings->import( NONFATAL => @WARNING_NONFATAL );
-    warnings->unimport('experimental::signatures');
 
     my @experiments = qw(
+        regex_sets
         signatures
     );
+    warnings->unimport( map { 'experimental::' . $_ } @experiments );
     experimental->import::into( $caller_level, @experiments );
 
     my ($version) = $^V =~ /^v(5\.\d+)/;

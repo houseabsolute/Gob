@@ -2,6 +2,7 @@ requires 'autodie'                        => '2.29';
 requires 'Import::Into'                   => '1.002005';
 requires 'indirect'                       => '0.37';
 requires 'Moose'                          => '2.1805';
+requires 'MooseX::Getopt'                 => '0.71';
 requires 'MooseX::MarkAsMethods'          => '0.13';
 requires 'MooseX::NonMoose'               => '0.25';
 requires 'MooseX::SemiAffordanceAccessor' => '0.10';
@@ -9,6 +10,11 @@ requires 'MooseX::StrictConstructor'      => '0.19';
 requires 'multidimensional'               => '0.012';
 requires 'namespace::autoclean'           => '0.28';
 requires 'Specio'                         => '0.24';
+
+on test => sub {
+    requires 'Test2::Suite'       => '0.000058';
+    requires 'Test::Class::Moose' => '0.78';
+};
 
 on develop => sub {
     requires 'DBIx::Class::Helper::Row::ToJSON'       => '2.033001';
