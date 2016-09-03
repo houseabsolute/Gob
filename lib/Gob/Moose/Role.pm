@@ -3,10 +3,9 @@
 package Gob::Moose::Role;
 
 use Import::Into;
-use Moose ();
+use Moose::Role ();
 use Moose::Exporter;
 use MooseX::SemiAffordanceAccessor ();
-use MooseX::StrictConstructor      ();
 use namespace::autoclean           ();
 
 use g;

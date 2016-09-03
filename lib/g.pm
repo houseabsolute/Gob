@@ -6,9 +6,9 @@ use warnings;
 
 use Import::Into;
 
-# can'tt include bareword::filehandles because this conflicts with autodie -
+# Can't include bareword::filehandles because this conflicts with autodie -
 # see https://rt.cpan.org/Ticket/Display.html?id=93591
-use autodie 2.25 ();
+use autodie ();
 use experimental ();
 use feature          ();
 use indirect         ();

@@ -2,14 +2,14 @@ package Gob::DBICDumper;
 
 use Gob::Moose;
 
-use DBI 1.636;
-use DBIx::Class::Helper::Row::ToJSON 2.033001   ();
-use DBIx::Class::InflateColumn::Serializer 0.08 ();
-use DBIx::Class::Schema::Loader 0.07045 qw( make_schema_at );
-use DBIx::Class::TimeStamp 0.14 ();
+use DBI;
+use DBIx::Class::Helper::Row::ToJSON       ();
+use DBIx::Class::InflateColumn::Serializer ();
+use DBIx::Class::Schema::Loader qw( make_schema_at );
+use DBIx::Class::TimeStamp ();
 use Gob::Types;
-use MooseX::MarkAsMethods 0.13 ();
-use MooseX::NonMoose 0.25      ();
+use MooseX::MarkAsMethods ();
+use MooseX::NonMoose      ();
 
 with 'MooseX::Getopt::Dashes';
 
