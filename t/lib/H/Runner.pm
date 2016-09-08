@@ -50,10 +50,7 @@ has methods => (
 sub run ($self) {
     $self->_load_classes;
 
-    my %args = (
-        set_process_name => 1,
-        jobs             => 1,
-    );
+    my %args = ( set_process_name => 1 );
 
     $args{test_classes} = $self->_test_classes
         if $self->_has_test_classes;
