@@ -1,5 +1,3 @@
-## no critic (Moose::RequireMakeImmutable)
-
 package Gob::Moose::Role;
 
 use Import::Into;
