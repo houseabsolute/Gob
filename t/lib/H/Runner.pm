@@ -82,7 +82,7 @@ sub run ($self) {
 
 sub _load_classes ($self) {
     unless ( $self->_has_test_classes ) {
-        Test::Class::Moose::Load->import('t/lib');
+        Test::Class::Moose::Load->import('t/testlib');
         return;
     }
 
