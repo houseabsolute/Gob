@@ -3,6 +3,7 @@ package H::Runner;
 use Gob::Moose;
 
 use Gob::Types;
+use H::Test::Class::Moose::Config;
 use Module::Runtime qw( require_module );
 use Module::Util qw( fs_path_to_module );
 use Test::Class::Moose::Load ();
@@ -16,11 +17,21 @@ has jobs => (
     default => 4,
 );
 
+# These are values from the CLI set by passing --test-classes
 has test_classes => (
-    traits => ['Array'],
-    is     => 'ro',
-    isa    => t( 'ArrayRef', of => t('ClassName') ),
+    is  => 'ro',
+    isa => t( 'ArrayRef', of => t('NonEmptyStr') ),
     default => sub { [] },
+);
+
+# These are the munged filenames/classes from the CLI, whether via the
+# --test-classes argument or by being the "extra" argv.
+has _test_classes => (
+    traits  => ['Array'],
+    is      => 'ro',
+    isa     => t( 'ArrayRef', of => t('PackageName') ),
+    lazy    => 1,
+    builder => '_build_test_classes',
     handles => {
         _has_test_classes => 'count',
     },
@@ -44,7 +55,7 @@ sub run ($self) {
         jobs             => 1,
     );
 
-    $args{test_classes} = $self->test_classes
+    $args{test_classes} = $self->_test_classes
         if $self->_has_test_classes;
 
     if ( $self->_has_methods ) {
@@ -53,7 +64,18 @@ sub run ($self) {
         $args{include} = qr/^(?:$names)$/;
     }
 
+    my $c = H::Container->new;
+    $args{test_configuration}
+        = H::Test::Class::Moose::Config->new( container => $c );
+
     Test::Class::Moose::Runner->new(%args)->runtests;
+
+    # We don't want to try to drop the database if it hasn't already been
+    # created.
+    if ( $c->created_service('fixtures/f') ) {
+        $c->resolve( service => 'database|db_name/dbh' )->disconnect;
+        $c->resolve( service => 'fixtures/db' )->drop;
+    }
 
     return 0;
 }
@@ -64,10 +86,22 @@ sub _load_classes ($self) {
         return;
     }
 
-    require_module($_)
-        for map { $self->_maybe_file_to_class($_) } $self->test_classes->@*;
+    require_module($_) for $self->_test_classes->@*;
 
     return;
+}
+
+sub _build_test_classes ($self) {
+    return [
+        map { $self->_maybe_file_to_class($_) } (
+            $self->test_classes->@*,
+            (
+                  $self->extra_argv
+                ? $self->extra_argv->@*
+                : ()
+            ),
+        )
+    ];
 }
 
 sub _maybe_file_to_class ( $self, $thing ) {

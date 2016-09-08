@@ -5,14 +5,18 @@ use MooseX::SemiAffordanceAccessor ();
 use MooseX::StrictConstructor      ();
 
 use g;
+use namespace::autoclean    ();
 
+use H::Container;
 use Import::Into;
+use Specio::Declare;
 use Test::Class::Moose      ();
 use Test2::Bundle::Extended ();
-use namespace::autoclean    ();
 
 my ($import) = Moose::Exporter->setup_import_methods;
 
+# It'd be nice to somehow just reuse Gob::Moose instead of copying it's
+# implementation here, but attempting to do that didn't seem to work so well.
 sub import {
     my $for_class = caller();
 
@@ -29,6 +33,16 @@ sub import {
 
     g->import::into($caller_level);
     namespace::autoclean->import::into($caller_level);
+
+    $for_class->meta->add_attribute(
+        container => (
+            is       => 'ro',
+            isa      => object_isa_type('H::Container'),
+            required => 1,
+        ),
+    );
+
+    return;
 }
 
 1;
