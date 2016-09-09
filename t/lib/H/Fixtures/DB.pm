@@ -41,15 +41,16 @@ sub BUILD ( $self, @ ) {
 
     diag( 'Creating a test database named ' . $self->name );
 
+    my $stderr;
     Pg::CLI::createdb->new( $self->_pg_cli_args )->run(
         database => $self->name,
-        stdout   => sub {
-            diag($_) for map { chomp; $_ } @_;
-        },
-        stderr => sub {
-            fail($_) for map { chomp; $_ } @_;
-        },
+        stdout   => \&_chomp_diag,
+        stderr   => \$stderr,
     );
+    if ($stderr) {
+        fail( 'createdb ' . $self->name );
+        diag($stderr);
+    }
 
     my $pushed = pushd( $self->checkout_root_dir->child('schema') );
 
@@ -67,13 +68,10 @@ sub BUILD ( $self, @ ) {
         [ qw( sqitch --quiet verify --target ), $uri ],
     );
     for my $c (@commands) {
-        my $stderr;
         run3(
             $c,
             undef,
-            sub {
-                diag($_) for map { chomp; $_ } @_;
-            },
+            \&_chomp_diag,
             \$stderr,
         );
         if ($stderr) {
@@ -115,10 +113,8 @@ sub drop ( $self, @ ) {
     my $stderr;
     Pg::CLI::dropdb->new( $self->_pg_cli_args )->run(
         database => $self->name,
-        stdout   => sub {
-            diag($_) for map { chomp; $_ } @_;
-        },
-        stderr => \$stderr,
+        stdout   => \&_chomp_diag,
+        stderr   => \$stderr,
     );
 
     if ($stderr) {
@@ -134,12 +130,8 @@ sub drop ( $self, @ ) {
                     $self->name
                 ),
             ],
-            stdout => sub {
-                diag($_) for map { chomp; $_ } @_;
-            },
-            stderr => sub {
-                diag($_) for map { chomp; $_ } @_;
-            },
+            stdout => \&_chomp_diag,
+            stderr => \&_chomp_diag,
         );
     }
 
@@ -150,6 +142,13 @@ sub _pg_cli_args ($self) {
     return
         map { defined $self->$_ ? ( $_ => $self->$_ ) : () }
         qw( user password host port );
+}
+
+sub _chomp_diag {
+    for (@_) {
+        chomp;
+        diag($_);
+    }
 }
 
 __PACKAGE__->meta->make_immutable;

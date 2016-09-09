@@ -33,7 +33,6 @@ sub next_step_for_application ( $self, $application ) {
     die 'Application is not for this posting'
         unless $self->posting_id eq $self->posting_id;
 
-    
 }
 
 __PACKAGE__->meta->make_immutable;

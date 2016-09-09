@@ -10,8 +10,7 @@ sub test_types ( $self, @ ) {
         MethodName => {
             valid =>
                 [ 'foo', 'foo23', '___', '_foo', "\x{34b0}", "_\x{34b0}" ],
-            invalid =>
-                [ '1foo', q{ }, 'foo bar', q{!}, { foo => 42 } ],
+            invalid => [ '1foo', q{ }, 'foo bar', q{!}, { foo => 42 } ],
         },
     );
 

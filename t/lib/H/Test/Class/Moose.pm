@@ -5,7 +5,7 @@ use MooseX::SemiAffordanceAccessor ();
 use MooseX::StrictConstructor      ();
 
 use g;
-use namespace::autoclean    ();
+use namespace::autoclean ();
 
 use H::Container;
 use Import::Into;

@@ -8,8 +8,8 @@ use Import::Into;
 
 # Can't include bareword::filehandles because this conflicts with autodie -
 # see https://rt.cpan.org/Ticket/Display.html?id=93591
-use autodie ();
-use experimental ();
+use autodie          ();
+use experimental     ();
 use feature          ();
 use indirect         ();
 use mro              ();
@@ -19,6 +19,7 @@ use multidimensional ();
 use open qw( :encoding(UTF-8) :std );
 use utf8 ();
 
+## no critic (Variables::ProhibitPackageVars)
 # Copied from strictures.pm
 our @WARNING_CATEGORIES = grep { exists $warnings::Offsets{$_} }
 #<<<
@@ -107,6 +108,7 @@ our @WARNING_NONFATAL = grep { exists $warnings::Offsets{$_} } (
     'deprecated',      # unfortunately can't make these fatal
     'portable',        # everything worked fine here, just may not elsewhere
 );
+## use critic
 
 sub import {
     my $caller_level = 1;
