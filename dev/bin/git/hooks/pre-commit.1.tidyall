@@ -1,0 +1,47 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use feature qw( say );
+
+use local::lib 'local';
+use lib 'lib';
+
+# We need this to be seen by perlcritic when it executes
+$ENV{PERL5LIB} = join ':', grep {defined} 'lib', 'dev/lib', $ENV{PERL5LIB};
+
+use Code::TidyAll::Git::Precommit;
+use FindBin qw($Bin);
+
+use lib "$Bin/../../t/lib";
+use Timer::Simple ();
+use Try::Tiny qw( catch try );
+
+timed_run(
+    sub {
+        Code::TidyAll::Git::Precommit->check(
+            no_stash        => 1,
+            tidyall_options => { no_cache => 0 },
+        );
+    },
+    'tidyall'
+);
+
+sub timed_run {
+    my $command     = shift;
+    my $description = shift;
+
+    my $timer = Timer::Simple->new( start => 0, string => 'human' );
+    $timer->start;
+    my $exception;
+    try { $command->(); }
+    catch { $exception = $_ };
+    $timer->stop;
+
+    say sprintf(
+        '%s took %s', $description,
+        Timer::Simple::format_hms($timer)
+    );
+
+    die $exception if $exception;
+}

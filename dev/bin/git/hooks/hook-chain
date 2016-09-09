@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+# http://stackoverflow.com/a/8734391
+# https://github.com/henrik/dotfiles/blob/master/git_template/hooks/pre-commit
+
+hookname=$( basename $0 )
+exitcodes=()
+data=$(cat)
+
+for hook in "$GIT_DIR"/../git/hooks/$hookname.*
+do
+    if test -x "$hook" && echo "$hook" | grep -v -E '\.sample$' > /dev/null ; then
+        echo Running hook $hook
+        echo "$data" | "$hook" "$@"
+        status=$?
+        exitcodes+=($status)
+
+        if test $status -ne 0; then
+            echo Hook \"$hook\" failed with error code $status
+        fi
+    fi
+done
+
+# if any exit code isn't 0, bail
+for i in "${exitcodes[@]}"; do
+    [ $i -eq 0 ] || exit $i
+done

@@ -5,6 +5,8 @@ program-extensions = pl psgi t
 
 exclude = Subroutines::ProhibitCallsToUndeclaredSubs
 
+[Gob::Utils::MonkeyPatch]
+
 [BuiltinFunctions::ProhibitStringySplit]
 severity = 3
 
@@ -42,6 +44,28 @@ severity = 3
 
 [Variables::ProhibitPackageVars]
 add_packages = Carp Test::Builder
+
+[Moose::ProhibitDESTROYMethod]
+equivalent_modules = Gob::Moose Gob::Moose::Role Gob::MooseX::Role::Parameterized H::Test::Class::Moose
+
+[Moose::ProhibitMultipleWiths]
+equivalent_modules = Gob::Moose Gob::Moose::Role Gob::MooseX::Role::Parameterized H::Test::Class::Moose
+
+[Moose::ProhibitNewMethod]
+equivalent_modules = Gob::Moose Gob::Moose::Role Gob::MooseX::Role::Parameterized H::Test::Class::Moose
+
+[Moose::RequireCleanNamespace]
+modules = Moose Moose::Role MooseX::Role::Parameterized Moose::Util::TypeConstraints
+cleaners = namespace::autoclean Gob::Moose Gob::Moose::Role Gob::MooseX::Role::Parameterized
+
+[Moose::RequireMakeImmutable]
+equivalent_modules = Gob::Moose H::Test::Class::Moose
+
+[TestingAndDebugging::RequireUseStrict]
+equivalent_modules = g Gob::Moose Gob::Moose::Role Gob::MooseX::Role::Parameterized H::Test::Class::Moose
+
+[TestingAndDebugging::RequireUseWarnings]
+equivalent_modules = g Gob::Moose Gob::Moose::Role Gob::MooseX::Role::Parameterized H::Test::Class::Moose
 
 [-Subroutines::RequireFinalReturn]
 
