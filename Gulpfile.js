@@ -72,7 +72,7 @@ gulp.task('concat', ['copy-react', 'copy-react-dom', 'eslint'], function() {
     .pipe(babel({
       compact: false
     }))
-    .pipe(concat('app.js'))
+    .pipe(concat('App.js'))
     .pipe(browserify({
         insertGlobals: true,
         debug: !env.production

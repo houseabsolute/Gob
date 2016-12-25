@@ -1,6 +1,6 @@
 /.tidyall.d
 /build
 /node_modules
-/assets/js/app.*
+/assets/js/App.*
 /assets/js/src/vendor/**/*
-
+/assets/css/**/*
