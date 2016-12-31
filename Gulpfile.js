@@ -12,7 +12,7 @@ var plumber      = require('gulp-plumber');
 var reload       = browserSync.reload;
 var sass         = require('gulp-sass');
 var sourcemaps   = require('gulp-sourcemaps');
-var browserify   = require('gulp-browserify');
+var webpack      = require('webpack-stream');
 var debug        = require('gulp-debug');
 var path         = require('path');
 
@@ -30,18 +30,14 @@ var plumberOptions = {
   errorHandler: onError,
 };
 
-var jsFiles = {
-  vendor: [
-
-  ],
-  source: [
-    'assets/js/src/App.js'
-  ]
-};
+var jsFiles = [
+  'assets/js/src/**/*.js',
+  'assets/js/src/**/*.jsx'
+];
 
 // Lint JS/JSX files
 gulp.task('eslint', function() {
-  return gulp.src(jsFiles.source)
+  return gulp.src(jsFiles)
     .pipe(eslint({
       baseConfig: {
         "ecmaFeatures": {
@@ -58,38 +54,30 @@ var copy = function(source, target) {
     .pipe(newer(target))
     .pipe(gulp.dest(path.dirname(target)));
 }
-// Copy react.js and react-dom.js to assets/js/src/vendor
-// only if the copy in node_modules is "newer"
-gulp.task('copy-react', function() {
-  return copy('node_modules/react/dist/react.js', 'assets/js/src/vendor/react.js');
-});
-gulp.task('copy-react-dom', function() {
-  return copy('node_modules/react-dom/dist/react-dom.js', 'assets/js/src/vendor/react-dom.js');
-});
-gulp.task('copy-react-bootstrap', function() {
-  return copy('node_modules/react-bootstrap/dist/react-bootstrap.js', 'assets/js/src/vendor/react-bootstrap.js');
-});
+
 gulp.task('copy-bootstrap', function() {
-  return copy('node_modules/bootstrap/dist/css/bootstrap.css', 'assets/css/src/vendor/bootstrap.css');
+  return copy('node_modules/bootstrap/dist/css/bootstrap.css', 'assets/css/vendor/bootstrap.css');
 });
 gulp.task('copy-bootstrap-theme', function() {
-  return copy('node_modules/bootstrap/dist/css/bootstrap-theme.css', 'assets/css/src/vendor/bootstrap-theme.css');
+  return copy('node_modules/bootstrap/dist/css/bootstrap-theme.css', 'assets/css/vendor/bootstrap-theme.css');
 });
 
-// Concatenate jsFiles.vendor and jsFiles.source into one JS file.
-// Run copy-react and eslint before concatenating
-gulp.task('concat-js', ['copy-react', 'copy-react-dom', 'copy-react-bootstrap', 'eslint'], function() {
-  return gulp.src(jsFiles.vendor.concat(jsFiles.source))
-    .pipe(sourcemaps.init())
-    .pipe(babel({
-      compact: false
+// Concatenate jsFiles.vendor and jsFiles into one JS file.
+gulp.task('concat-js', ['eslint'], function() {
+  return gulp.src(jsFiles)
+    .pipe(webpack({
+        devtool: 'source-map',
+        module: {
+            loaders: [{
+                test: /.jsx?$/,
+                loader: 'babel-loader',
+                exclude: /node_modules/,
+            }]
+        },
+        output: {
+            filename: 'App.js'
+        }
     }))
-    .pipe(concat('App.js'))
-    .pipe(browserify({
-        insertGlobals: true,
-        debug: !env.production
-    }))
-    .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('assets/js'));
 });
 
@@ -122,10 +110,10 @@ gulp.task('sass', function() {
     .pipe(reload(reloadOptions));
 });
 
-// Concatenate jsFiles.vendor and jsFiles.source into one JS file.
+// Concatenate jsFiles.vendor and jsFiles into one JS file.
 // Run copy-react and eslint before concatenating
 gulp.task('concat-css', ['sass', 'copy-bootstrap', 'copy-bootstrap-theme'], function() {
-  return gulp.src(['assets/css/src/vendor/**/*.css', 'assets/css/src/App.css'])
+  return gulp.src(['assets/css/vendor/**/*.css', 'assets/css/src/App.css'])
     .pipe(sourcemaps.init())
     .pipe(concat('App.css'))
     .pipe(sourcemaps.write('./'))
@@ -134,7 +122,7 @@ gulp.task('concat-css', ['sass', 'copy-bootstrap', 'copy-bootstrap-theme'], func
 
 // Watch JS/JSX and Sass files
 gulp.task('watch', function() {
-  gulp.watch('assets/js/src/**/*.{js,jsx}', ['concat-js']);
+  gulp.watch(jsFiles, ['concat-js']);
   gulp.watch('assets/sass/**/*.scss', ['concat-css']);
 });
 
