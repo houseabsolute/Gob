@@ -27,20 +27,10 @@ sub import {
     Test2::Bundle::Extended->import::into( $caller_level, '!meta' );
 
     MooseX::SemiAffordanceAccessor->import( { into => $for_class } );
-
-    # TCM passes all of its config k/v pairs to each test class (annoyingly)
-    # so we cannot use MX::StrictConstructor.
+    MooseX::StrictConstructor->import( { into => $for_class } );
 
     g->import::into($caller_level);
     namespace::autoclean->import::into($caller_level);
-
-    $for_class->meta->add_attribute(
-        container => (
-            is       => 'ro',
-            isa      => object_isa_type('H::Container'),
-            required => 1,
-        ),
-    );
 
     return;
 }

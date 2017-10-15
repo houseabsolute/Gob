@@ -3,7 +3,7 @@ package T::Gob::Container;
 use H::Test::Class::Moose;
 
 sub test_db ( $self, @ ) {
-    my $c    = $self->container;
+    my $c    = $T::C;
     my $name = $c->resolve( service => 'database|db_name/name' );
     my $pid  = $$;
 
